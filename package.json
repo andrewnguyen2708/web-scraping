@@ -1,0 +1,21 @@
+{
+  "name": "y",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-cron": "^3.0.3",
+    "node-fetch": "^3.3.2",
+    "puppeteer": "^20.9.0",
+    "superagent": "^8.1.2",
+    "twilio": "^4.19.3"
+  },
+  "description": ""
+}
