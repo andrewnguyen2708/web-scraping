@@ -1,93 +1,52 @@
-const puppeteer = require("puppeteer");
-const fs = require("fs/promises");
-const cron = require("node-cron");
+const express = require("express");
+const app = express();
+const port = 3000;
+const http = require("http");
+// Create the request body
+const postData = JSON.stringify({
+  page: "1",
+});
 
-async function scrawl() {
-  const browser = await puppeteer.launch({ headless: "new" });
-  const page = await browser.newPage();
-  await page.goto("http://online.gov.vn/WebDetails");
-  // await page.screenshot({ path: "example.png", fullPage: true });
+const options = {
+  hostname: "online.gov.vn",
+  path: "/WebDetails",
+  method: "GET",
+  // headers: {
+  //   "Content-Type": "application/x-www-form-urlencoded",
+  //   "Content-Length": Buffer.byteLength(postData),
+  // },
+};
 
-  // await page.pdf({ path: "example.pdf", format: "A4" });
-  const data = [];
+app.get("/", (req, res) => {
+  const makePost = () => {
+    let data = "";
 
-  let p = 1;
-  do {
-    const rows = await page.$$eval(
-      "#tableWeb > tbody > tr > td:nth-child(2)",
-      (els) => Array.from(els).map((el) => el.textContent)
-    );
+    const request = http.request(options, (response) => {
+      response.setEncoding("utf8");
 
-    for (let i = 0; i < rows.length; i++) {
-      const newPage = await browser.newPage();
-      await newPage.goto("http://online.gov.vn/WebDetails");
-      await Promise.all([
-        newPage.click(
-          `#tableWeb > tbody > tr:nth-child(${i + 1}) > td:nth-child(4) > a`
-        ),
-        newPage.waitForNavigation(),
-      ]);
-      const domain = await newPage.$eval(
-        "#containerBOX > div.col-sm-8 > div.row > div > div.row.boxDetailDataDisplay > div:nth-child(2) > div:nth-child(2) > p",
-        (el) => el.textContent
-      );
-      const companyName = await newPage.$eval(
-        "#containerBOX > div.col-sm-8 > div.row > div > div.row.boxDetailDataDisplay > div:nth-child(5) > div:nth-child(2)",
-        (el) => el.textContent
-      );
-      const taxNumber = await newPage.$eval(
-        "#containerBOX > div.col-sm-8 > div.row > div > div.row.boxDetailDataDisplay > div:nth-child(6) > div:nth-child(2)",
-        (el) => el.textContent
-      );
-      data.push({ domain, companyName, taxNumber });
-    }
+      response.on("data", (chunk) => {
+        data += chunk;
+      });
 
-    const listBtn = await page.$$eval(
-      "#boxResultCOntent > div > div > ul > li.pager__item > a",
-      (els) => {
-        return Array.from(els).map((el) => el.textContent);
-      }
-    );
+      response.on("end", () => {
+        console.log(data);
+        res.send(data);
+      });
+    });
 
-    const active = await page.$eval(
-      "#boxResultCOntent > div > div > ul > li.pager__item.active > a",
-      (el) => el.textContent
-    );
+    request.on("error", (error) => {
+      console.error(error);
+    });
 
-    const index = listBtn.findIndex((item) => Number(item) === p + 1);
+    // Write data to the request body
+    // request.write(postData);
 
-    await page.click(
-      `#boxResultCOntent > div > div > ul > li.pager__item:nth-child(3) > a`
-    ),
-    // await Promise.all([
-    //   page.click(
-    //     `#boxResultCOntent > div > div > ul > li.pager__item:nth-child(3) > a`
-    //   ),
-    //   page.waitForResponse(),
-    // ]);
+    request.end();
+  };
 
-    console.log({ active, index });
+  makePost();
+});
 
-    p++;
-  } while (p < 3);
-
-  const clearData = data.map((item) => {
-    const { domain, companyName, taxNumber } = item;
-    const newDomain = domain.replace("\n", "").trim();
-    const newCompanyName = companyName.replace("\n", "").trim();
-    const newTaxNumber = taxNumber.replace("\n", "").trim();
-
-    return {
-      domain: newDomain,
-      companyName: newCompanyName,
-      taxNumber: newTaxNumber,
-    };
-  });
-
-  console.log({ clearData });
-
-  // const courses
-  await browser.close();
-}
-
-scrawl();
+app.listen(port, () => {
+  console.log(`Example app listening at http://localhost:${port}`);
+});

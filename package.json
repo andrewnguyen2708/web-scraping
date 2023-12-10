@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node app",
+    "start": "nodemon index",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -15,7 +15,11 @@
     "node-fetch": "^3.3.2",
     "puppeteer": "^20.9.0",
     "superagent": "^8.1.2",
-    "twilio": "^4.19.3"
+    "twilio": "^4.19.3",
+    "write-excel-file": "^1.4.27"
   },
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
 }
