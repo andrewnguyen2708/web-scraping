@@ -29,8 +29,10 @@ async function scrawl() {
       }))
     );
 
-    // Thêm trang hiện tại 
-    const newRow = newData.map(item => ({...item, page: active}))
+    // Thêm trang hiện tại
+    const newRow = newData.map((item) => ({ ...item, page: active }));
+
+    console.log({ newRow });
 
     rows.push(...newRow);
 
@@ -52,7 +54,7 @@ async function scrawl() {
       page.click(
         `#boxResultCOntent > div > div > ul > li.pager__item:nth-child(${index}) > a`
       ), // Clicking the link will indirectly cause a navigation
-      new Promise(r => setTimeout(r, 5000))
+      new Promise((r) => setTimeout(r, 5000)),
     ]);
 
     p++;
@@ -88,7 +90,7 @@ async function scrawl() {
     ],
   ];
 
-  // Lặp qua các dòng lấy được 
+  // Lặp qua các dòng lấy được
   for (let row of rows) {
     // Mở trang mới
     const newPage = await browser.newPage();
@@ -150,10 +152,14 @@ async function scrawl() {
     data.push(dataRow);
   }
 
+  console.log({ data });
+
   // Ghi dữ li ệu vào file website.xlsx
   await writeXlsxFile(data, {
     filePath: "./website.xlsx",
   });
+
+  console.log("crawl success");
 
   // Đóng trình duyệt
   await browser.close();
