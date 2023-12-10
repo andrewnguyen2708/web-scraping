@@ -39,20 +39,24 @@ async function scrawl() {
     ]);
 
     p++;
-  } while (p < 2);
+  } while (p < 10);
 
   const data = [
     [
-      {
-        value: "Company Name",
-        fontWeight: "bold",
-      },
       {
         value: "Domain name",
         fontWeight: "bold",
       },
       {
         value: "Tax Number",
+        fontWeight: "bold",
+      },
+      {
+        value: "Address",
+        fontWeight: "bold",
+      },
+      {
+        value: "Phone",
         fontWeight: "bold",
       },
     ],
@@ -65,8 +69,12 @@ async function scrawl() {
       "#containerBOX > div.col-sm-8 > div.row > div > div.row.boxDetailDataDisplay > div:nth-child(2) > div:nth-child(2) > p",
       (el) => el.textContent
     );
-    const companyName = await newPage.$eval(
-      "#containerBOX > div.col-sm-8 > div.row > div > div.row.boxDetailDataDisplay > div:nth-child(4) > div:nth-child(2)",
+    const address = await newPage.$eval(
+      "#containerBOX > div.col-sm-8 > div.row > div > div.row.boxDetailDataDisplay > div:nth-child(6) > div:nth-child(2)",
+      (el) => el.textContent
+    );
+    const phone = await newPage.$eval(
+      "#containerBOX > div.col-sm-8 > div.row > div > div.row.boxDetailDataDisplay > div:nth-child(9) > div:nth-child(2)",
       (el) => el.textContent
     );
     const taxNumber = await newPage.$eval(
@@ -74,25 +82,31 @@ async function scrawl() {
       (el) => el.textContent
     );
     const newDomain = domain.replace("\n", "").trim();
-    const newCompanyName = companyName.replace("\n", "").trim();
+    const newAddress = address.replace("\n", "").trim();
+    const newPhone = phone.replace("\n", "").trim();
     const newTaxNumber = taxNumber.replace("\n", "").trim();
     const dataRow = [
-      // "company name"
-      {
-        type: String,
-        value: newCompanyName,
-      },
-
+      
       // "domain name"
       {
         type: String,
         value: newDomain,
       },
-
+      
       // "tax number"
       {
         type: String,
         value: newTaxNumber,
+      },
+      // "Address"
+      {
+        type: String,
+        value: newAddress,
+      },
+      // "Phone"
+      {
+        type: String,
+        value: newPhone,
       },
     ];
     data.push(dataRow);
